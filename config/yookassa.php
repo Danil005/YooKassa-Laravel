@@ -11,5 +11,17 @@ return [
     'shop_id' => env('YOOKASSA_ID', ''),
 
     # Redirect URI
-    'redirect_uri' => env('YOOKASSA_REDIRECT', '')
+    'redirect_uri' => env('YOOKASSA_REDIRECT', ''),
+
+    # Database Migration
+    'migration' => [
+        # Field Foreign Column
+        'field_foreign' => env('YOOKASSA_DATABASE_FIELD_FOREIGN', 'user_id'),
+        # Field On Table
+        'field_on' => env('YOOKASSA_DATABASE_FIELD_ON', 'users'),
+        # Field References Column
+        'field_references' => env('YOOKASSA_DATABASE_FIELD_REFERENCES', 'id'),
+        # Field Delete Type
+        'field_delete' => env('YOOKASSA_DATABASE_FIELD_ON_DELETE', 'cascade')
+    ]
 ];

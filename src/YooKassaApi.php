@@ -2,6 +2,8 @@
 
 namespace Fiks\YooKassa;
 
+use Fiks\YooKassa\Payment\CreatePayment;
+use Illuminate\Support\Facades\DB;
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
 use YooKassa\Common\Exceptions\BadApiRequestException;
@@ -48,11 +50,12 @@ class YooKassaApi
     /**
      * Create Payment
      *
-     * @param float  $sum
-     * @param string $currency
-     * @param string $description
+     * @param float    $sum
+     * @param string   $currency
+     * @param string   $description
+     * @param int|null $user_id
      *
-     * @return CreatePaymentResponse|null
+     * @return CreatePayment
      *
      * @throws ApiException
      * @throws BadApiRequestException
@@ -64,9 +67,13 @@ class YooKassaApi
      * @throws TooManyRequestsException
      * @throws UnauthorizedException
      */
-    public function createPayment(float $sum, string $currency, string $description): ?CreatePaymentResponse
+    public function createPayment(float $sum, string $currency, string $description, int $user_id = null): CreatePayment
     {
-        return $this->client->createPayment([
+        # Uniq ID
+        $uniq_id = uniqid('', true);
+
+        # Create Request
+        return new CreatePayment($this->client->createPayment([
             'amount' => [
                 'value' => $sum,
                 'currency' => $currency
@@ -77,6 +84,6 @@ class YooKassaApi
             ],
             'capture' => true,
             'description' => $description,
-        ], uniqid('', true));
+        ], $uniq_id), $uniq_id, $user_id);
     }
 }
