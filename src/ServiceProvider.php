@@ -1,6 +1,6 @@
 <?php
 
-namespace Fiks\YooMoney;
+namespace Fiks\YooKassa;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -13,12 +13,12 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
-        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'Fiks\\YooMoney');
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'Fiks\\YooKassa');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
 
         $this->publishes([
-            __DIR__.'/../config/yoomoney.php' => config_path('yoomoney.php'),
+            __DIR__.'/../config/yookassa.php' => config_path('yookassa.php'),
             __DIR__.'/../resources/lang' => resource_path('lang/en'),
         ]);
 
@@ -32,9 +32,9 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/yoomoney.php', 'yoomoney'
+            __DIR__.'/../config/yookassa.php', 'yookassa'
         );
 
-        $this->app->bind(YooMoneyApi::class);
+        $this->app->bind(YooKassaApi::class);
     }
 }

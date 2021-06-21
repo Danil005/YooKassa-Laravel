@@ -1,6 +1,6 @@
 <?php
 
-namespace Fiks\YooMoney;
+namespace Fiks\YooKassa;
 
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
@@ -14,7 +14,7 @@ use YooKassa\Common\Exceptions\TooManyRequestsException;
 use YooKassa\Common\Exceptions\UnauthorizedException;
 use YooKassa\Request\Payments\CreatePaymentResponse;
 
-class YooMoneyApi
+class YooKassaApi
 {
     /**
      * Configuration YooMoney
@@ -35,7 +35,7 @@ class YooMoneyApi
      */
     public function __construct(array $config = [])
     {
-        $default = config('yoomoney');
+        $default = config('yookassa');
         # Configuration
         $this->config = array_merge($config, $default);
 

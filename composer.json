@@ -1,6 +1,6 @@
 {
-    "name": "fiks/yoo-money-laravel",
-    "description": "YooMoney Laravel Packagist",
+    "name": "fiks/yoo-kassa-laravel",
+    "description": "YooKassa Laravel Packagist",
     "type": "library",
     "require": {
         "guzzlehttp/guzzle": "^7.0.1",
@@ -14,21 +14,21 @@
     ],
     "autoload": {
         "psr-4": {
-            "Fiks\\YooMoney\\": "./src"
+            "Fiks\\YooKassa\\": "./src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Fiks\\YooMoney\\Tests\\": "./tests"
+            "Fiks\\YooKassa\\Tests\\": "./tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Fiks\\YooMoney\\ServiceProvider"
+                "Fiks\\YooKassa\\ServiceProvider"
             ],
             "aliases": {
-                "YooMoney": "Fiks\\YooMoney\\Facade"
+                "YooKassa": "Fiks\\YooKassa\\Facade"
             }
         }
     },
@@ -39,5 +39,6 @@
         "post-autoload-dump": [
             "@php ./vendor/bin/testbench package:discover --ansi"
         ]
-    }
+    },
+    "license": "MIT"
 }

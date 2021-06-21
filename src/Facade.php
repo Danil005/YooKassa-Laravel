@@ -1,6 +1,6 @@
 <?php
 
-namespace Fiks\YooMoney;
+namespace Fiks\YooKassa;
 
 use Illuminate\Support\Facades\Facade as BaseFacade;
 
@@ -8,6 +8,6 @@ class Facade extends BaseFacade
 {
     public static function getFacadeAccessor()
     {
-        return YooMoneyApi::class;
+        return YooKassaApi::class;
     }
 }
