@@ -2,6 +2,7 @@
     "name": "fiks/yoo-kassa-laravel",
     "description": "YooKassa Laravel Packagist",
     "type": "library",
+    "minimum-stability": "alpha",
     "require": {
         "guzzlehttp/guzzle": "^7.0.1",
         "yoomoney/yookassa-sdk-php": "^2.1"
