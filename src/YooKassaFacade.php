@@ -4,7 +4,7 @@ namespace Fiks\YooKassa;
 
 use Illuminate\Support\Facades\Facade as BaseFacade;
 
-class Facade extends BaseFacade
+class YooKassaFacade extends BaseFacade
 {
     public static function getFacadeAccessor()
     {

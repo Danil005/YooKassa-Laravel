@@ -26,10 +26,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Fiks\\YooKassa\\ServiceProvider"
+                "YooKassaServiceProvider"
             ],
             "aliases": {
-                "YooKassa": "Fiks\\YooKassa\\Facade"
+                "YooKassa": "YooKassaFacade"
             }
         }
     },

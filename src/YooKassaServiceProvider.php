@@ -4,7 +4,7 @@ namespace Fiks\YooKassa;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
-class ServiceProvider extends BaseServiceProvider
+class YooKassaServiceProvider extends BaseServiceProvider
 {
     /**
      * Bootstrap any package services.
