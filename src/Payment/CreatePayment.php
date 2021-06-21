@@ -3,6 +3,8 @@
 namespace Fiks\YooKassa\Payment;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use YooKassa\Request\Payments\CreatePaymentResponse;
 
@@ -29,6 +31,13 @@ class CreatePayment
      */
     private string $uniq_id;
 
+    /**
+     * ID row from datatable after inserted
+     *
+     * @var int
+     */
+    private int $inserted_id;
+
     public function __construct(?CreatePaymentResponse $response, string $uniq_id, int $user_id = null)
     {
         $this->response = $response;
@@ -46,7 +55,9 @@ class CreatePayment
         $times = Carbon::now();
 
         # Insert to Database
-        DB::table('yookassa')->insert([
+        $this->inserted_id = DB::table(
+            env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa')
+        )->insertGetId([
             'user_id' => $this->user_id,
             'uniq_id' => $this->uniq_id,
             'payment_id' => $this->response->getId(),
@@ -68,5 +79,35 @@ class CreatePayment
     public function response(): ?CreatePaymentResponse
     {
         return $this->response;
+    }
+
+    /**
+     * Got Response and Database
+     *
+     * ArrayShape([
+     *     'response' => ?CreatePaymentResponse,
+     *     'database' => Model|Builder|object|null
+     * ])
+     *
+     * @return array
+     */
+    public function responseAndDatabase(): array
+    {
+        return [
+            'response' => $this->response(),
+            'database' => $this->database()
+        ];
+    }
+
+    /**
+     * Get Row From Database
+     *
+     * @return Model|Builder|object|null
+     */
+    public function database()
+    {
+        return DB::table(
+            env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa')
+        )->where('id', $this->inserted_id)->first();
     }
 }

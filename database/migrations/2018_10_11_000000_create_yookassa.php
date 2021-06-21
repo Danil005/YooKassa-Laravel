@@ -13,7 +13,7 @@ class CreateYookassa extends Migration
      */
     public function up()
     {
-        Schema::create('yookassa', function (Blueprint $table) {
+        Schema::create(env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa'), function (Blueprint $table) {
             $table->id();
             # UserID from Users table
             $table->unsignedBigInteger('user_id')->nullable();
@@ -59,6 +59,6 @@ class CreateYookassa extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('yookassa');
+        Schema::dropIfExists(env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa'));
     }
 }

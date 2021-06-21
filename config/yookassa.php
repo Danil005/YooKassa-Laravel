@@ -15,6 +15,8 @@ return [
 
     # Database Migration
     'migration' => [
+        # Table Name Database
+        'table_name' => env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa'),
         # Field Foreign Column
         'field_foreign' => env('YOOKASSA_DATABASE_FIELD_FOREIGN', 'user_id'),
         # Field On Table

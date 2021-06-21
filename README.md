@@ -49,6 +49,9 @@ Laravel пакет для YooKassa. Предназначен для упроще
 
 Создает таблицу в базе данных: `yookassa`
 
+> Можно изменить название таблицы через .env: `YOOKASSA_DATABASE_TABLE_NAME`.
+>
+
 |Столбец|Тип данных|Описание|
 |--|--|--|
 |{field_foreign}|unsignedBigInteger \| null | ID-пользователя, если был передан.`foreign {field_foreign} references {field_references} on {field_on} onDelete {field_delete}`
@@ -65,11 +68,8 @@ Laravel пакет для YooKassa. Предназначен для упроще
 |updated_at|datetime|Дата обновления заказа
 
 > {field_foreign} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_FOREIGN`. По умолчанию: user_id
-
 > {field_on} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_ON`. По умолчанию: users
-
 > {field_references} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_REFERENCES`. По умолчанию: id
-
 > {field_delete} -- возможность изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_ON_DELETE`. По умолчанию: cascade
 
 ---
@@ -87,6 +87,7 @@ YOOKASSA_DATABASE_FIELD_FOREIGN=<Поле которое будет зависи
 YOOKASSA_DATABASE_FIELD_ON=<Таблица с которой есть зависимость>
 YOOKASSA_DATABASE_FIELD_REFERENCES=<Поле от которого будет зависить>
 YOOKASSA_DATABASE_FIELD_ON_DELETE=<Тип удаления строки>
+YOOKASSA_DATABASE_TABLE_NAME=<Имя таблицы в базе данной>
 ```
 Токен можно взять: https://yookassa.ru/my/merchant/integration/api-keys
 
