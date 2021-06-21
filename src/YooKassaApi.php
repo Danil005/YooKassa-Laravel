@@ -80,7 +80,7 @@ class YooKassaApi
             ],
             'confirmation' => [
                 'type' => 'redirect',
-                'return_url' => $this->config['redirect_uri']
+                'return_url' => $this->config['redirect_uri'] . '?uniq_id='.$uniq_id
             ],
             'metadata' => [
                 'uniq_id' => $uniq_id
