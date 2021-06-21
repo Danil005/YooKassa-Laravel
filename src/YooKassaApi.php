@@ -2,6 +2,7 @@
 
 namespace Fiks\YooKassa;
 
+use Carbon\Carbon;
 use Fiks\YooKassa\Payment\CodesPayment;
 use Fiks\YooKassa\Payment\CreatePayment;
 use Illuminate\Support\Facades\DB;
@@ -57,6 +58,25 @@ class YooKassaApi
 
         # Table
         $this->table = env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa');
+    }
+
+    /**
+     * Finish Payment
+     *
+     * @param string $payment_id
+     * @param        $response
+     */
+    private function finishPayment(string $payment_id, $response)
+    {
+        $status = $response->getStatus();
+
+        DB::table($this->table)->where('payment_id', $payment_id)->update([
+            'paid' => $response->getPaid(),
+            'sum' => $response->getAmount()->getIntegerValue() / 100,
+            'currency' => $response->getAmount()->getCurrency(),
+            'paid_at' => $status == 'succeeded' ? Carbon::now()->toDateTimeString() : null,
+            'status' => $status
+        ]);
     }
 
     /**
@@ -147,8 +167,13 @@ class YooKassaApi
             ], $invoice['payment_id'], $uniq_id);
 
             if($response->getStatus() == 'succeeded') {
+                # Finish Payment
+                $this->finishPayment($invoice['payment_id'], $response);
                 return $success($response, $invoice);
             } else {
+                # Finish Payment
+                $this->finishPayment($invoice['payment_id'], $response);
+
                 if($failed)
                     return $failed($response, $invoice);
 
@@ -158,8 +183,14 @@ class YooKassaApi
                 ];
             }
         } elseif($payment->getStatus() == 'succeeded') {
+            # Finish Payment
+            $this->finishPayment($invoice['payment_id'], $payment);
+
             return $success($payment, $invoice);
         } else {
+            # Finish Payment
+            $this->finishPayment($invoice['payment_id'], $payment);
+
             if($failed)
                 return $failed($payment, $invoice);
 
