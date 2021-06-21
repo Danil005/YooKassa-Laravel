@@ -15,3 +15,5 @@ storage/*.key
 Homestead.yaml
 Homestead.json
 /.vagrant
+/composer.lock
+.idea

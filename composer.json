@@ -1,0 +1,43 @@
+{
+    "name": "fiks/yoo-money-laravel",
+    "description": "YooMoney Laravel Packagist",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^7.0.1",
+        "yoomoney/yookassa-sdk-php": "^2.1"
+    },
+    "authors": [
+        {
+            "name": "Danil Sidorenko",
+            "email": "danilsidorenko00@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Fiks\\YooMoney\\": "./src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fiks\\YooMoney\\Tests\\": "./tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Fiks\\YooMoney\\ServiceProvider"
+            ],
+            "aliases": {
+                "YooMoney": "Fiks\\YooMoney\\Facade"
+            }
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.18"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php ./vendor/bin/testbench package:discover --ansi"
+        ]
+    }
+}
