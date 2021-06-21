@@ -19,7 +19,7 @@ class YooKassaServiceProvider extends BaseServiceProvider
 
         $this->publishes([
             __DIR__.'/../config/yookassa.php' => config_path('yookassa.php'),
-            __DIR__.'/../resources/lang' => resource_path('lang/en/yookassa.php'),
+            __DIR__.'/../resources/lang' => resource_path('yookassa.php'),
             __DIR__.'/../database/migrations' => database_path('migrations'),
         ]);
 

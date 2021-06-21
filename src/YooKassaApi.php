@@ -2,6 +2,7 @@
 
 namespace Fiks\YooKassa;
 
+use Fiks\YooKassa\Payment\CodesPayment;
 use Fiks\YooKassa\Payment\CreatePayment;
 use Illuminate\Support\Facades\DB;
 use YooKassa\Client;
@@ -33,6 +34,13 @@ class YooKassaApi
     private Client $client;
 
     /**
+     * Table Yookassa
+     *
+     * @var string
+     */
+    private string $table;
+
+    /**
      * YooMoneyApi constructor.
      */
     public function __construct(array $config = [])
@@ -43,8 +51,12 @@ class YooKassaApi
 
         # Create Client
         $this->client = new Client();
+
         # Create Authorization
         $this->client->setAuth($this->config['shop_id'], $this->config['token']);
+
+        # Table
+        $this->table = env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa');
     }
 
     /**
@@ -74,21 +86,87 @@ class YooKassaApi
 
         # Create Request
         return new CreatePayment($this->client->createPayment([
-            'amount' => [
-                'value' => $sum,
+            'amount'       => [
+                'value'    => $sum,
                 'currency' => $currency
             ],
             'confirmation' => [
-                'type' => 'redirect',
-                'return_url' => $this->config['redirect_uri'] . '?uniq_id='.$uniq_id
+                'type'       => 'redirect',
+                'return_url' => $this->config['redirect_uri'] . '?uniq_id=' . $uniq_id
             ],
-            'metadata' => [
+            'metadata'     => [
                 'uniq_id' => $uniq_id
             ],
-            'capture' => true,
-            'description' => $description,
+            'capture'      => true,
+            'description'  => $description,
         ], $uniq_id), $uniq_id, $user_id);
     }
 
+    /**
+     * Checking Payments
+     *
+     * @param string        $uniq_id
+     * @param callable      $success
+     * @param callable|null $failed
+     *
+     * @return mixed
+     *
+     * @throws ApiException
+     * @throws BadApiRequestException
+     * @throws ExtensionNotFoundException
+     * @throws ForbiddenException
+     * @throws InternalServerError
+     * @throws NotFoundException
+     * @throws ResponseProcessingException
+     * @throws TooManyRequestsException
+     * @throws UnauthorizedException
+     */
+    public function checkPayment(string $uniq_id, callable $success, callable $failed = null)
+    {
+        # Get Invoice From Database
+        $invoice = DB::table($this->table)->where('uniq_id', $uniq_id)->first();
 
+        $uniq_id = uniqid('', true);
+        # If Invoice Not Found
+        if(is_null($invoice))
+            return [
+                'error' => 'Invalid Invoice',
+                'code'  => CodesPayment::INVOICE_NOT_FOUND
+            ];
+
+        # Get Payment Info
+        $payment = $this->client->getPaymentInfo($invoice['payment_id']);
+
+        # Validation Payment Life
+        if($payment->getStatus() == 'waiting_for_capture') {
+            $response = $this->client->capturePayment([
+                'amount' => [
+                    'value'    => $invoice['sum'],
+                    'currency' => $invoice['currency'],
+                ],
+            ], $invoice['payment_id'], $uniq_id);
+
+            if($response->getStatus() == 'succeeded') {
+                return $success($response, $invoice);
+            } else {
+                if($failed)
+                    return $failed($response, $invoice);
+
+                return [
+                    'error' => 'Canceled Invoice',
+                    'code'  => CodesPayment::CANCELED_INVOICE
+                ];
+            }
+        } elseif($payment->getStatus() == 'succeeded') {
+            return $success($payment, $invoice);
+        } else {
+            if($failed)
+                return $failed($payment, $invoice);
+
+            return [
+                'error' => 'Canceled Invoice',
+                'code'  => CodesPayment::CANCELED_INVOICE
+            ];
+        }
+    }
 }
