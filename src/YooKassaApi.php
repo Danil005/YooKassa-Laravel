@@ -155,7 +155,7 @@ class YooKassaApi
             ];
 
         # Get Payment Info
-        $payment = $this->client->getPaymentInfo($invoice['payment_id']);
+        $payment = $this->client->getPaymentInfo($invoice->payment_id);
 
         # Validation Payment Life
         if($payment->getStatus() == 'waiting_for_capture') {
@@ -164,15 +164,15 @@ class YooKassaApi
                     'value'    => $invoice['sum'],
                     'currency' => $invoice['currency'],
                 ],
-            ], $invoice['payment_id'], $uniq_id);
+            ], $invoice->payment_id, $uniq_id);
 
             if($response->getStatus() == 'succeeded') {
                 # Finish Payment
-                $this->finishPayment($invoice['payment_id'], $response);
+                $this->finishPayment($invoice->payment_id, $response);
                 return $success($response, $invoice);
             } else {
                 # Finish Payment
-                $this->finishPayment($invoice['payment_id'], $response);
+                $this->finishPayment($invoice->payment_id, $response);
 
                 if($failed)
                     return $failed($response, $invoice);
@@ -184,12 +184,12 @@ class YooKassaApi
             }
         } elseif($payment->getStatus() == 'succeeded') {
             # Finish Payment
-            $this->finishPayment($invoice['payment_id'], $payment);
+            $this->finishPayment($invoice->payment_id, $payment);
 
             return $success($payment, $invoice);
         } else {
             # Finish Payment
-            $this->finishPayment($invoice['payment_id'], $payment);
+            $this->finishPayment($invoice->payment_id, $payment);
 
             if($failed)
                 return $failed($payment, $invoice);
