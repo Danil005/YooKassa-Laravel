@@ -43,12 +43,47 @@ Laravel пакет для YooKassa. Предназначен для упроще
 `php artisan vendor:publish --provider=Fiks\YooKassa\YooKassaServiceProvider`
 
 ---
+#### Миграция (Обязательно)
+Создать миграцию
+`php artisan migrate`
+
+Создает таблицу в базе данных: `yookassa`
+
+|Столбец|Тип данных|Описание|
+|--|--|--|
+|{field_foreign}|unsignedBigInteger \| null | ID-пользователя, если был передан.`foreign {field_foreign} references {field_references} on {field_on} onDelete {field_delete}`
+|payment_id|string|ID-платежа из системы YooKassa
+|status|enum(['pending', 'waiting_for_capture', 'succeeded', 'canceled'])|[Статус платежа](https://yookassa.ru/developers/payments/payment-process#lifecycle)|
+|paid|boolean|Признак оплаты заказа
+|sum|float, 2|Сумма заказа с округлением в 2 знака после запятой
+|currency|string|Код валюты по [ISO 4217](https://index.minfin.com.ua/reference/currency/code/)
+|payment_link|string|Ссылка для оплаты заказа на YooKassa
+|description|string|Описание заказа
+|paid_at|datetime|Дата оплаты в формате: `2018-07-25T10:52:00.233Z`|
+|uniq_id|string|Уникальный ID в Вашей системе
+|created_at|datetime|Дата создания заказа
+|updated_at|datetime|Дата обновления заказа
+
+> {field_foreign} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_FOREIGN`. По умолчанию: user_id
+> {field_on} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_ON`. По умолчанию: users
+> {field_references} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_REFERENCES`. По умолчанию: id
+> {field_delete} -- возможность изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_ON_DELETE`. По умолчанию: cascade
+
+---
 #### .env
-Обязательные параметры в .env:
+Параметры в .env:
 ```env
+# Обязательные поля
+
 YOOKASSA_TOKEN=<API токен из магазина>
 YOOKASSA_ID=<ID-магазина>
 YOOKASSA_REDIRECT=<Ссылка после оплаты>
+
+# Необязательные поля
+YOOKASSA_DATABASE_FIELD_FOREIGN=<Поле которое будет зависить>
+YOOKASSA_DATABASE_FIELD_ON=<Таблица с которой есть зависимость>
+YOOKASSA_DATABASE_FIELD_REFERENCES=<Поле от которого будет зависить>
+YOOKASSA_DATABASE_FIELD_ON_DELETE=<Тип удаления строки>
 ```
 Токен можно взять: https://yookassa.ru/my/merchant/integration/api-keys
 
@@ -72,6 +107,7 @@ YOOKASSA_REDIRECT=<Ссылка после оплаты>
 |sum|float|Сумма заказа|100.00|
 |currency|string|Код валюты по [ISO 4217](https://index.minfin.com.ua/reference/currency/code/)|RUB
 |description|string|Описание заказа|Заказ №1
+|user_id|string \| null|ID-пользователя|1
 
 ##### Возможные ошибки:
 |Тип|Описание|
@@ -87,4 +123,8 @@ YOOKASSA_REDIRECT=<Ссылка после оплаты>
 |UnauthorizedException|Неверный идентификатор вашего аккаунта в ЮKassa или секретный ключ (имя пользователя и пароль при аутентификации).|
 
 ##### Успешная операция
-Возвращает класс [CreatePaymentResponse](https://github.com/yoomoney/yookassa-sdk-php/blob/master/docs/classes/YooKassa-Request-Payments-CreatePaymentResponse.md#methods)
+Возвращает класс `CreatePayment`
+
+|Методы|Описание|Возвращает|
+|--|--|--|
+|response()|Получить ответ от создания платежа|[CreatePaymentResponse](https://github.com/yoomoney/yookassa-sdk-php/blob/master/docs/classes/YooKassa-Request-Payments-CreatePaymentResponse.md#methods) \| null
