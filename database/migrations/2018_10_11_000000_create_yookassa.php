@@ -16,7 +16,7 @@ class CreateYookassa extends Migration
         Schema::create(env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa'), function (Blueprint $table) {
             $table->id();
             # UserID from Users table
-            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger(env('YOOKASSA_DATABASE_FIELD_FOREIGN', 'user_id'))->nullable();
 
             # PaymentID from YooKassa
             $table->string('payment_id');
@@ -41,9 +41,9 @@ class CreateYookassa extends Migration
             $table->foreign(
                 env('YOOKASSA_DATABASE_FIELD_FOREIGN', 'user_id')
             )->references(
-                env('YOOKASSA_DATABASE_FIELD_ON', 'users')
-            )->on(
                 env('YOOKASSA_DATABASE_FIELD_REFERENCES', 'id')
+            )->on(
+                env('YOOKASSA_DATABASE_FIELD_ON', 'users')
             )->onDelete(
                 env('YOOKASSA_DATABASE_FIELD_ON_DELETE', 'cascade')
             );

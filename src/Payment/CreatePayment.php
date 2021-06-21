@@ -58,7 +58,7 @@ class CreatePayment
         $this->inserted_id = DB::table(
             env('YOOKASSA_DATABASE_TABLE_NAME', 'yookassa')
         )->insertGetId([
-            'user_id' => $this->user_id,
+            env('YOOKASSA_DATABASE_FIELD_FOREIGN', 'user_id') => $this->user_id,
             'uniq_id' => $this->uniq_id,
             'payment_id' => $this->response->getId(),
             'status' => $this->response->getStatus(),
