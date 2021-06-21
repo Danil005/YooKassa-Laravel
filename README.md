@@ -65,8 +65,11 @@ Laravel пакет для YooKassa. Предназначен для упроще
 |updated_at|datetime|Дата обновления заказа
 
 > {field_foreign} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_FOREIGN`. По умолчанию: user_id
+
 > {field_on} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_ON`. По умолчанию: users
+
 > {field_references} -- возможно изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_REFERENCES`. По умолчанию: id
+
 > {field_delete} -- возможность изменить данный столбец в .env: `YOOKASSA_DATABASE_FIELD_ON_DELETE`. По умолчанию: cascade
 
 ---
