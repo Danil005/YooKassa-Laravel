@@ -10,7 +10,7 @@
 
 1. [Get Started](#getStarted)
 2. [Доступные методы](#methods)
-    * [createPayment](#methods-create-payment)
+   * [createPayment](#methods-create-payment)
 
 ## <a name="getStarted"></a>1. GetStarted | [Top](#list)
 Laravel пакет для YooKassa. Предназначен для упрощения работы
@@ -20,9 +20,27 @@ Laravel пакет для YooKassa. Предназначен для упроще
 ####  Установка
 `composer require fiks/yoo-kassa-laravel`
 
+
+#### config/app.php
+
+```php
+'providers' => [
+	...
+	Fiks\YooKassa\YooKassaServiceProvider::class,
+	...
+],
+'aliases' => [
+	...
+	'YooKassa' => Fiks\YooKassa\YooKassaFacade::class,
+	...
+]
+```
+
+
+
 ---
 #### Публикация конфигураций
-`php artisan vendor:publish`
+`php artisan vendor:publish --provider=Fiks\YooKassa\YooKassaServiceProvider`
 
 ---
 #### .env
