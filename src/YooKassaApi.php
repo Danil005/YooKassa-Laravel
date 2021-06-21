@@ -82,6 +82,9 @@ class YooKassaApi
                 'type' => 'redirect',
                 'return_url' => $this->config['redirect_uri']
             ],
+            'metadata' => [
+                'uniq_id' => $uniq_id
+            ],
             'capture' => true,
             'description' => $description,
         ], $uniq_id), $uniq_id, $user_id);
