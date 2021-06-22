@@ -209,7 +209,7 @@ class YooKassaApi
      */
     public function webhook()
     {
-        return new WebhookPayment();
+        return new WebhookPayment($this);
     }
 
     /**

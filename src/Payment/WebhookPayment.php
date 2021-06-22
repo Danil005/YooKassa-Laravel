@@ -2,6 +2,7 @@
 
 namespace Fiks\YooKassa\Payment;
 
+use Fiks\YooKassa\YooKassaApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use YooKassa\Client;
@@ -29,12 +30,18 @@ class WebhookPayment
      */
     private Client $client;
 
-    public function __construct()
+    /**
+     * API
+     *
+     * @var ?YooKassaApi
+     */
+    private ?YooKassaApi $api;
+
+    public function __construct(?YooKassaApi $api = null)
     {
         $this->client = new Client();
-        $this->client->setAuthToken(
-            'Bearer '.env('YOOKASSA_CLIENT_ID', null).':'.Cache::get('yookassa_token')
-        );
+        $this->client->setAuthToken('Bearer ' . env('YOOKASSA_CLIENT_ID', null) . ':' . Cache::get('yookassa_token'));
+        $this->api = $api;
     }
 
     /**
@@ -59,7 +66,7 @@ class WebhookPayment
     {
         return $this->client->addWebhook([
             'event' => $event,
-            'url' => $url
+            'url'   => $url
         ]);
     }
 
@@ -108,35 +115,41 @@ class WebhookPayment
         # Read Webhook
         $data = $request->all();
 
-        if( isset($data['code']) ) {
+        if(isset($data['code'])) {
             $client_id = env('YOOKASSA_CLIENT_ID', null);;
             $client_secret = env('YOOKASSA_CLIENT_SECRET', null);
 
-            if( !$client_id )
+            if(!$client_id)
                 die('YOOKASSA_CLIENT_ID not exist');
 
-            if( !$client_secret )
+            if(!$client_secret)
                 die('YOOKASSA_CLIENT_SECRET not exist');
 
             $http = new \GuzzleHttp\Client();
 
             $response = $http->post('https://yookassa.ru/oauth/v2/token', [
                 'form_params' => [
-                    'grant_type' => 'authorization_code',
-                    'code' => $data['code'],
-                    'client_id' => $client_id,
+                    'grant_type'    => 'authorization_code',
+                    'code'          => $data['code'],
+                    'client_id'     => $client_id,
                     'client_secret' => $client_secret
                 ]
             ]);
 
             $response = json_decode($response->getBody()->getContents(), true);
-            if( $response['access_token'] ) {
+            if($response['access_token']) {
                 Cache::set('yookassa_token', $response['access_token']);
             } else {
                 die('Generate token again not exist');
             }
-        } else {
-            \Storage::disk('public')->put('webhook.txt', json_encode($data));
+        }
+
+        if(isset($data['notification'])) {
+            if($data['event'] == 'payment.waiting_for_capture') {
+                $this->api->checkPayment($data['object']['metadata']['uniq_id'], function($payment, $invoice) {
+
+                });
+            }
         }
     }
 }
