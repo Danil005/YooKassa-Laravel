@@ -118,7 +118,7 @@ class WebhookPayment
             $http = new \GuzzleHttp\Client();
 
             $response = $http->post('https://yookassa.ru/oauth/v2/token', [
-                'body' => [
+                'form_params' => [
                     'grant_type' => 'authorization_code',
                     'code' => $data['code'],
                     'client_id' => $client_id,
