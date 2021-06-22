@@ -33,7 +33,7 @@ class WebhookPayment
     {
         $this->client = new Client();
         $this->client->setAuthToken(
-            base64_encode(env('YOOKASSA_CLIENT_ID', null).':'.Cache::get('yookassa_token'))
+            'Bearer '.env('YOOKASSA_CLIENT_ID', null).':'.Cache::get('yookassa_token')
         );
     }
 
