@@ -5,6 +5,7 @@ namespace Fiks\YooKassa;
 use Carbon\Carbon;
 use Fiks\YooKassa\Payment\CodesPayment;
 use Fiks\YooKassa\Payment\CreatePayment;
+use Fiks\YooKassa\Payment\WebhookPayment;
 use Illuminate\Support\Facades\DB;
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
@@ -199,5 +200,15 @@ class YooKassaApi
                 'code'  => CodesPayment::CANCELED_INVOICE
             ];
         }
+    }
+
+    /**
+     * Webhook settings
+     *
+     * @return WebhookPayment
+     */
+    public function webhook()
+    {
+        return new WebhookPayment($this->client);
     }
 }
