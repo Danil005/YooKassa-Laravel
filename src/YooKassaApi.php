@@ -209,6 +209,11 @@ class YooKassaApi
      */
     public function webhook()
     {
-        return new WebhookPayment($this->client);
+        return new WebhookPayment();
+    }
+
+    public function oauth()
+    {
+
     }
 }
