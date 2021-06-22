@@ -29,7 +29,7 @@ class WebhookPayment
     public function __construct()
     {
         $this->client = new Client();
-        $this->client->setAuthToken('J86BB2QKHCnq3RaqiG5_F3o1v0x1aFvUrg0CL9FXHY9ty6zMS80oM3vEANdFLTad');
+        $this->client->setAuthToken('Bearer J86BB2QKHCnq3RaqiG5_F3o1v0x1aFvUrg0CL9FXHY9ty6zMS80oM3vEANdFLTad');
     }
 
     /**
