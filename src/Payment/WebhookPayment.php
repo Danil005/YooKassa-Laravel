@@ -32,7 +32,7 @@ class WebhookPayment
     public function __construct()
     {
         $this->client = new Client();
-        $this->client->setAuthToken(Cache::get('yookassa_token'));
+        $this->client->setAuthToken(env('YOOKASSA_CLIENT_ID').':'.Cache::get('yookassa_token'));
     }
 
     /**
