@@ -105,6 +105,7 @@ class WebhookPayment
 
     public function read(Request $request)
     {
+        # Read Webhook
         $data = $request->all();
 
         if( isset($data['code']) ) {
@@ -134,6 +135,8 @@ class WebhookPayment
             } else {
                 die('Generate token again not exist');
             }
+        } else {
+            \Storage::disk('public')->put('webhook.txt', json_encode($data));
         }
     }
 }
