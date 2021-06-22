@@ -212,8 +212,13 @@ class YooKassaApi
         return new WebhookPayment();
     }
 
+    /**
+     * Oauth YooKassa
+     *
+     * @return Oauth
+     */
     public function oauth()
     {
-
+        return new Oauth();
     }
 }

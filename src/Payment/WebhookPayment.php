@@ -2,6 +2,8 @@
 
 namespace Fiks\YooKassa\Payment;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use YooKassa\Client;
 use YooKassa\Common\Exceptions\ApiException;
 use YooKassa\Common\Exceptions\AuthorizeException;
@@ -14,6 +16,7 @@ use YooKassa\Common\Exceptions\ResponseProcessingException;
 use YooKassa\Common\Exceptions\TooManyRequestsException;
 use YooKassa\Common\Exceptions\UnauthorizedException;
 use YooKassa\Model\NotificationEventType;
+use YooKassa\Model\Requestor;
 use YooKassa\Model\Webhook\Webhook;
 use YooKassa\Request\Webhook\WebhookListResponse;
 
@@ -29,7 +32,7 @@ class WebhookPayment
     public function __construct()
     {
         $this->client = new Client();
-        $this->client->setAuthToken('Bearer J86BB2QKHCnq3RaqiG5_F3o1v0x1aFvUrg0CL9FXHY9ty6zMS80oM3vEANdFLTad');
+        $this->client->setAuthToken(Cache::get('yookassa_token'));
     }
 
     /**
@@ -96,5 +99,39 @@ class WebhookPayment
     public function deleteWebhook(string $webhook_id)
     {
         $response = $this->client->removeWebhook($webhook_id);
+    }
+
+    public function read(Request $request)
+    {
+        $data = $request->all();
+
+        if( isset($data['code']) ) {
+            $client_id = env('YOOKASSA_CLIENT_ID', null);;
+            $client_secret = env('YOOKASSA_CLIENT_SECRET', null);
+
+            if( !$client_id )
+                die('YOOKASSA_CLIENT_ID not exist');
+
+            if( !$client_secret )
+                die('YOOKASSA_CLIENT_SECRET not exist');
+
+            $http = new \GuzzleHttp\Client();
+
+            $response = $http->post('https://yookassa.ru/oauth/v2/token', [
+                'body' => [
+                    'grant_type' => 'authorization_code',
+                    'code' => $data['code'],
+                    'client_id' => $client_id,
+                    'client_secret' => $client_secret
+                ]
+            ]);
+
+            $response = json_decode($response->getBody()->getContents(), true);
+            if( $response['access_token'] ) {
+                Cache::set('yookassa_token', $response['access_token']);
+            } else {
+                die('Generate token again not exist');
+            }
+        }
     }
 }
