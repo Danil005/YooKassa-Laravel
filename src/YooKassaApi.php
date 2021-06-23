@@ -108,7 +108,7 @@ class YooKassaApi
         # Redirect URI
         $redirect_uri = $this->config['redirect_uri'];
         $redirect_uri = parse_url($redirect_uri);
-        $redirect_uri['scheme'] . '://' . $redirect_uri['host'] . '/' . env('YOOKASSA_PREFIX_ROUTE', 'yookassa') . '/' . $redirect_uri['path'] . '?uniq_id=' . $uniq_id;
+        $redirect_uri = $redirect_uri['scheme'] . '://' . $redirect_uri['host'] . '/' . env('YOOKASSA_PREFIX_ROUTE', 'yookassa') . '/' . $redirect_uri['path'] . '?uniq_id=' . $uniq_id;
 
         # Create Request
         return new CreatePayment($this->client->createPayment([
