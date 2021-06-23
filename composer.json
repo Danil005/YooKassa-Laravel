@@ -6,7 +6,8 @@
     "require": {
         "guzzlehttp/guzzle": "^7.0.1",
         "yoomoney/yookassa-sdk-php": "^2.1",
-        "ext-json": "*"
+        "ext-json": "*",
+        "jeremeamia/superclosure": "^2.4"
     },
     "authors": [
         {

@@ -2,11 +2,13 @@
 
 namespace Fiks\YooKassa\Payment;
 
+use Fiks\YooKassa\Callback\Callback;
+use Fiks\YooKassa\Traits\Contract;
 use Fiks\YooKassa\YooKassaApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use SuperClosure\Serializer;
 use YooKassa\Client;
-use YooKassa\Common\AbstractObject;
 use YooKassa\Common\Exceptions\ApiException;
 use YooKassa\Common\Exceptions\AuthorizeException;
 use YooKassa\Common\Exceptions\BadApiRequestException;
@@ -18,13 +20,14 @@ use YooKassa\Common\Exceptions\ResponseProcessingException;
 use YooKassa\Common\Exceptions\TooManyRequestsException;
 use YooKassa\Common\Exceptions\UnauthorizedException;
 use YooKassa\Model\NotificationEventType;
-use YooKassa\Model\Requestor;
 use YooKassa\Model\Webhook\Webhook;
 use YooKassa\Request\Payments\CreatePaymentResponse;
 use YooKassa\Request\Webhook\WebhookListResponse;
 
 class WebhookPayment
 {
+    use Contract;
+
     /**
      * YooKassa Client
      *
@@ -97,6 +100,7 @@ class WebhookPayment
      *
      * @param string $webhook_id
      *
+     * @return Webhook|null
      * @throws ApiException
      * @throws BadApiRequestException
      * @throws ExtensionNotFoundException
@@ -109,7 +113,7 @@ class WebhookPayment
      */
     public function deleteWebhook(string $webhook_id)
     {
-        $response = $this->client->removeWebhook($webhook_id);
+        return $this->client->removeWebhook($webhook_id);
     }
 
     public function read(Request $request)
@@ -123,14 +127,33 @@ class WebhookPayment
             $response = new CreatePaymentResponse();
             # Create Object to Array and Class
             $response->fromArray($data['object']);
+            $serializer = new Serializer();
 
             # Check Payment
-            $this->api->checkPayment($response->getMetadata()['uniq_id'], function($payment, $invoice) {
+            $this->api->checkPayment($response->getMetadata()['uniq_id'], function($payment, $invoice) use($serializer){
                 # Log Success Payment
                 \Storage::disk('public')->append('payment/success.txt', json_encode($payment));
-            }, function($payment, $invoice) {
+
+                # Execute custom function
+                $func = $this->callback()->exec();
+
+                # If exist cached function
+                if( $func ) {
+                    $func = $serializer->unserialize($func);
+                    $func($payment, $invoice);
+                }
+            }, function($payment, $invoice) use($serializer) {
                 # Log Error Payment
                 \Storage::disk('public')->append('payment/error.txt', json_encode($payment));
+
+                # Execute custom function
+                $func = $this->callback()->exec('failed');
+
+                # If exist cached function
+                if( $func ) {
+                    $func = $serializer->unserialize($func);
+                    $func($payment, $invoice);
+                }
             });
         }
 
@@ -162,8 +185,15 @@ class WebhookPayment
                 die('Generate token again not exist');
             }
         }
+    }
 
-
-
+    /**
+     * Add Callback functions
+     *
+     * @return Callback
+     */
+    public function callback()
+    {
+        return new Callback();
     }
 }
