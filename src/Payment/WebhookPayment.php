@@ -6,6 +6,7 @@ use Fiks\YooKassa\YooKassaApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use YooKassa\Client;
+use YooKassa\Common\AbstractObject;
 use YooKassa\Common\Exceptions\ApiException;
 use YooKassa\Common\Exceptions\AuthorizeException;
 use YooKassa\Common\Exceptions\BadApiRequestException;
@@ -19,6 +20,7 @@ use YooKassa\Common\Exceptions\UnauthorizedException;
 use YooKassa\Model\NotificationEventType;
 use YooKassa\Model\Requestor;
 use YooKassa\Model\Webhook\Webhook;
+use YooKassa\Request\Payments\CreatePaymentResponse;
 use YooKassa\Request\Webhook\WebhookListResponse;
 
 class WebhookPayment
@@ -115,6 +117,23 @@ class WebhookPayment
         # Read Webhook
         $data = $request->all();
 
+        # Notification
+        if(isset($data['type']) && $data['type'] == 'notification') {
+            # Create Response
+            $response = new CreatePaymentResponse();
+            # Create Object to Array and Class
+            $response->fromArray($data['object']);
+
+            # Check Payment
+            $this->api->checkPayment($response->getMetadata()['uniq_id'], function($payment, $invoice) {
+                # Log Success Payment
+                \Storage::disk('public')->append('payment/success.txt', json_encode($payment));
+            }, function($payment, $invoice) {
+                # Log Error Payment
+                \Storage::disk('public')->append('payment/error.txt', json_encode($payment));
+            });
+        }
+
         if(isset($data['code'])) {
             $client_id = env('YOOKASSA_CLIENT_ID', null);;
             $client_secret = env('YOOKASSA_CLIENT_SECRET', null);
@@ -145,12 +164,6 @@ class WebhookPayment
         }
 
 
-        if(isset($data['notification'])) {
-            if($data['event'] == 'payment.waiting_for_capture') {
-                $this->api->checkPayment($data['object']['metadata']['uniq_id'], function($payment, $invoice) {
-                    \Storage::disk('public')->put('test/response.txt', json_encode($payment));
-                });
-            }
-        }
+
     }
 }

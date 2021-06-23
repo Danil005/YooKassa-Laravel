@@ -67,7 +67,7 @@ class YooKassaApi
      * @param string $payment_id
      * @param        $response
      */
-    private function finishPayment(string $payment_id, $response)
+    public function finishPayment(string $payment_id, $response)
     {
         $status = $response->getStatus();
 
