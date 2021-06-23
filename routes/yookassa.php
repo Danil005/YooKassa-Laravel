@@ -29,11 +29,12 @@ Route::prefix(env('YOOKASSA_PREFIX_ROUTE', 'yookassa'))->group(function() {
      */
     $redirect_uri = env('YOOKASSA_REDIRECT', '');
 
-    if(strpos($redirect_uri, 'http://') || strpos($redirect_uri, 'https://')) {
-        $redirect_uri = str_replace('/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/m', '', $redirect_uri);
+    if(str_contains($redirect_uri, 'http://') || str_contains($redirect_uri, 'https://')) {
+        $redirect_uri = preg_replace('/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/', '', $redirect_uri);
         $redirect_uri = str_replace('http://', '', $redirect_uri);
         $redirect_uri = str_replace('https://', '', $redirect_uri);
     }
+
     Route::get($redirect_uri, function() {
         $yookassa = new \Fiks\YooKassa\YooKassaApi();
 

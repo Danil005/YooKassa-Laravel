@@ -149,11 +149,15 @@ class YooKassaApi
 
         $uniq_id = uniqid('', true);
         # If Invoice Not Found
-        if(is_null($invoice))
+        if(is_null($invoice)) {
+            if( $failed )
+                $failed(null, $invoice);
+
             return [
                 'error' => 'Invalid Invoice',
                 'code'  => CodesPayment::INVOICE_NOT_FOUND
             ];
+        }
 
         # Get Payment Info
         $payment = $this->client->getPaymentInfo($invoice->payment_id);
