@@ -2,6 +2,7 @@
 
 namespace Fiks\YooKassa\Payment;
 
+use Exception;
 use Fiks\YooKassa\Callback\Callback;
 use Fiks\YooKassa\Traits\Contract;
 use Fiks\YooKassa\YooKassaApi;
@@ -139,8 +140,13 @@ class WebhookPayment
 
                 # If exist cached function
                 if( $func ) {
-                    $func = $serializer->unserialize($func);
-                    $func($payment, $invoice);
+                    try {
+                        $func = $serializer->unserialize($func);
+                        $func($payment, $invoice);
+                    } catch(Exception $exception) {
+                        print_r($exception->getMessage());
+                        die();
+                    }
                 }
             }, function($payment, $invoice) use($serializer) {
                 # Log Error Payment
@@ -151,8 +157,13 @@ class WebhookPayment
 
                 # If exist cached function
                 if( $func ) {
-                    $func = $serializer->unserialize($func);
-                    $func($payment, $invoice);
+                    try {
+                        $func = $serializer->unserialize($func);
+                        $func($payment, $invoice);
+                    } catch(Exception $exception) {
+                        print_r($exception->getMessage());
+                        die();
+                    }
                 }
             });
         }
@@ -181,8 +192,9 @@ class WebhookPayment
             $response = json_decode($response->getBody()->getContents(), true);
             if($response['access_token']) {
                 Cache::set('yookassa_token', $response['access_token']);
+                echo '<script>window.close()</script>';
             } else {
-                die('Generate token again not exist');
+                die('Generate token again. Token not exist');
             }
         }
     }

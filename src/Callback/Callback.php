@@ -16,7 +16,6 @@ class Callback
      */
     public function exec(string $type = 'success')
     {
-        $serializer = new Serializer();
         $path = "yookassa/{$type}.callable";
         try {
             return Storage::disk('public')->read($path);
