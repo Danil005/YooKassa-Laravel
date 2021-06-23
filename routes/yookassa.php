@@ -18,7 +18,7 @@ Route::prefix(env('YOOKASSA_PREFIX_ROUTE', 'yookassa'))->group(function() {
     /**
      * Read Webhook Events
      */
-    Route::get('webhook', function() {
+    Route::any('webhook', function() {
         $yookassa = new \Fiks\YooKassa\YooKassaApi();
 
         $yookassa->webhook()->read(request());
