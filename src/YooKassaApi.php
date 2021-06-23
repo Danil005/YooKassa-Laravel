@@ -105,6 +105,15 @@ class YooKassaApi
         # Uniq ID
         $uniq_id = uniqid('', true);
 
+        # Redirect URI
+        $redirect_uri = $this->config['redirect_uri'];
+
+        if(str_contains($redirect_uri, 'http://') || str_contains($redirect_uri, 'https://')) {
+            $redirect_uri = preg_replace('/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/', '', $redirect_uri);
+            $redirect_uri = str_replace('http://', '', $redirect_uri);
+            $redirect_uri = str_replace('https://', '', $redirect_uri);
+        }
+
         # Create Request
         return new CreatePayment($this->client->createPayment([
             'amount'       => [
@@ -113,7 +122,7 @@ class YooKassaApi
             ],
             'confirmation' => [
                 'type'       => 'redirect',
-                'return_url' => $this->config['redirect_uri'] . '?uniq_id=' . $uniq_id
+                'return_url' => $redirect_uri . '?uniq_id=' . $uniq_id
             ],
             'metadata'     => [
                 'uniq_id' => $uniq_id
