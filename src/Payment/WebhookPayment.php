@@ -144,14 +144,13 @@ class WebhookPayment
             }
         }
 
-        \Storage::disk('public')->put('response.txt', json_encode($data));
 
-//        if(isset($data['notification'])) {
-//            if($data['event'] == 'payment.waiting_for_capture') {
-//                $this->api->checkPayment($data['object']['metadata']['uniq_id'], function($payment, $invoice) {
-//
-//                });
-//            }
-//        }
+        if(isset($data['notification'])) {
+            if($data['event'] == 'payment.waiting_for_capture') {
+                $this->api->checkPayment($data['object']['metadata']['uniq_id'], function($payment, $invoice) {
+                    \Storage::disk('public')->put('test/response.txt', json_encode($payment));
+                });
+            }
+        }
     }
 }
