@@ -72,11 +72,11 @@ class YooKassaApi
         $status = $response->getStatus();
 
         DB::table($this->table)->where('payment_id', $payment_id)->update([
-            'paid' => $response->getPaid(),
-            'sum' => $response->getAmount()->getIntegerValue() / 100,
+            'paid'     => $response->getPaid(),
+            'sum'      => $response->getAmount()->getIntegerValue() / 100,
             'currency' => $response->getAmount()->getCurrency(),
-            'paid_at' => $status == 'succeeded' ? Carbon::now()->toDateTimeString() : null,
-            'status' => $status
+            'paid_at'  => $status == 'succeeded' ? Carbon::now()->toDateTimeString() : null,
+            'status'   => $status
         ]);
     }
 
@@ -107,12 +107,8 @@ class YooKassaApi
 
         # Redirect URI
         $redirect_uri = $this->config['redirect_uri'];
-
-        if(str_contains($redirect_uri, 'http://') || str_contains($redirect_uri, 'https://')) {
-            $redirect_uri = preg_replace('/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]/', '', $redirect_uri);
-            $redirect_uri = str_replace('http://', '', $redirect_uri);
-            $redirect_uri = str_replace('https://', '', $redirect_uri);
-        }
+        $redirect_uri = parse_url($redirect_uri);
+        $redirect_uri['scheme'] . '://' . $redirect_uri['host'] . '/' . env('YOOKASSA_PREFIX_ROUTE', 'yookassa') . '/' . $redirect_uri['path'] . '?uniq_id=' . $uniq_id;
 
         # Create Request
         return new CreatePayment($this->client->createPayment([
@@ -122,7 +118,7 @@ class YooKassaApi
             ],
             'confirmation' => [
                 'type'       => 'redirect',
-                'return_url' => $redirect_uri . '?uniq_id=' . $uniq_id
+                'return_url' => $redirect_uri
             ],
             'metadata'     => [
                 'uniq_id' => $uniq_id
@@ -159,7 +155,7 @@ class YooKassaApi
         $uniq_id = uniqid('', true);
         # If Invoice Not Found
         if(is_null($invoice)) {
-            if( $failed )
+            if($failed)
                 $failed(null, $invoice);
 
             return [
