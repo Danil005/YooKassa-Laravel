@@ -62,6 +62,7 @@ class CreatePayment
             'uniq_id' => $this->uniq_id,
             'payment_id' => $this->response->getId(),
             'status' => $this->response->getStatus(),
+            'description' => $this->response->getDescription(),
             'paid' => $this->response->getPaid(),
             'sum' => $this->response->getAmount()->getIntegerValue() / 100,
             'currency' => $this->response->getAmount()->getCurrency(),
