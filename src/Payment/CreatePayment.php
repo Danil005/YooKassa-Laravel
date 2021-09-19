@@ -36,7 +36,7 @@ class CreatePayment
      *
      * @var int
      */
-    private int $inserted_id;
+    public int $inserted_id;
 
     public function __construct(?CreatePaymentResponse $response, string $uniq_id, int $user_id = null)
     {
